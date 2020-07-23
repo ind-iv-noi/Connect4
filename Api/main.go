@@ -16,7 +16,7 @@ var wg sync.WaitGroup
 var db *sql.DB
 
 const (
-	host     = "35.202.25.156"
+	host     = "127.0.0.1"
 	port     = 5432
 	user     = "postgres"
 	password = "indreias@LEAGUEINC"
@@ -37,6 +37,9 @@ func main() {
 	apiServer.GET("/api/start", startHandler)
 	apiServer.POST("/api/move", moveHandler)
 	apiServer.GET("/api/read", readHandler)
+	apiServer.POST("/api/restart", restartHandler)
+	apiServer.POST("/api/delete", deleteHandler)
+	apiServer.GET("/api/turn", turnHandler)
 	wg.Add(1)
 	go func() {
 		http.ListenAndServe(":8800", apiServer)

@@ -7,10 +7,14 @@ func generateGameID() int64 {
 }
 
 func checkFor(mat [6][7]int, x int) int {
+	nrOcupate := 0
 	dx := []int{-1, -1, 0, 1, 1, 1, 0, -1}
 	dy := []int{0, 1, 1, 1, 0, -1, -1, -1}
 	for i := 0; i < 6; i++ {
 		for j := 0; j < 7; j++ {
+			if mat[i][j] != 0 {
+				nrOcupate++
+			}
 			if mat[i][j] != x {
 				continue
 			}
@@ -37,6 +41,9 @@ func checkFor(mat [6][7]int, x int) int {
 				}
 			}
 		}
+	}
+	if nrOcupate == 42 {
+		return -1
 	}
 	return 0
 }
