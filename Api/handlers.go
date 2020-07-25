@@ -34,11 +34,11 @@ func moveHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		if int(player) != game.PlayerTurn {
 			hresp = HTTPResponse{Code: 401, Response: []string{"Not your turn", "-1000"}}
 		} else {
-			hresp = HTTPResponse{400, []string{"Erorr"}}
+			hresp = HTTPResponse{Code: 400, Response: []string{"Erorr", "400"}}
 		}
 	} else {
 		if resultFromGame(game) != 0 {
-			hresp = HTTPResponse{Code: 400, Response: []string{"Game finished", strconv.FormatInt(int64(resultFromGame(game)), 10)}}
+			hresp = HTTPResponse{Code: 400, Response: []string{"Game finished", strconv.FormatInt(parseGameResult(resultFromGame(game)), 10)}}
 			by, _ := json.Marshal(hresp)
 			fmt.Fprintln(w, string(by))
 			return
@@ -55,7 +55,7 @@ func moveHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 			game.PlayerTurn = 1
 		}
 		updateTable(tableID, game)
-		hresp = HTTPResponse{200, []string{"Ok", strconv.FormatInt(int64(resultFromGame(game)), 10)}}
+		hresp = HTTPResponse{200, []string{"Ok", strconv.FormatInt(parseGameResult(resultFromGame(game)), 10)}}
 	}
 	by, _ := json.Marshal(hresp)
 	fmt.Fprintln(w, string(by))

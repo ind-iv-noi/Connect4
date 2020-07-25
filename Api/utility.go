@@ -73,3 +73,10 @@ func arrayToMatrix(nrx []int64) [6][7]int {
 	}
 	return nr
 }
+
+func parseGameResult(res int) int64 {
+	if res >= 0 {
+		return int64(res)
+	}
+	return -1
+}

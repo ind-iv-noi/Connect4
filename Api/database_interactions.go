@@ -9,6 +9,7 @@ import (
 
 func getGameByID(gID int64) (Game, error) {
 	gameQuery, err := db.Query(fmt.Sprintf("SELECT PlayerTurn,GameTable FROM connect4 WHERE GID=%v", gID))
+	defer gameQuery.Close()
 	if err != nil {
 		return Game{}, err
 	}
