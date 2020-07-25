@@ -18,11 +18,16 @@ def getfont( path , size):
         new_font = pygame.font.Font(path, size)
         _font[(path,size)] = new_font
         return new_font
-def printtext(screen, string , font = getfont('FreeSansBold.ttf',32)):
-    text = font.render(string,True, (0,255,0), (255,0,0))
-    screen.blit(text,(0,0))
-
-
+def printtext(screen, string , font = getfont('FreeSansBold.ttf',40)):
+    text = font.render(string,True, (255, 255, 255), (0, 128, 256))
+    text_rect = text.get_rect()
+    text_rect.centerx = screen.get_rect().centerx
+    text_rect.centery = 50
+    screen.blit(text,text_rect)
+    pygame.display.flip()
+    pygame.time.wait(1000)
+    screen.fill((0,128,255),text_rect)
+    pygame.display.flip()
 
 class GameTable():
     _n = 6
@@ -30,9 +35,14 @@ class GameTable():
     mat = [[0 for i in range(7)] for j in range(6)]
     gID = ""
     playerID = 0
-    def __init__ (self):
-        self.gID = API_interact.startGame()
-        self.playerID = 1
+    def __init__ (self,screen,*args):
+        GameTable.draw_matrix(self,screen)
+        if(len(args) > 0 ):
+            self.gID = args[0]
+            self.playerID = 2
+        else:
+            self.gID = API_interact.startGame()
+            self.playerID = 1
         print(self.gID)
     def __del__(self):
         API_interact.deleteGame(self.gID)
@@ -93,17 +103,19 @@ def GetColumn(event):
         return 7
     return 0
 
-def getPlayerId():
-    return input("Player ID:")
-def main():
+def main(*args):
 
     screen = pygame.display.set_mode((1000,950))
     screen.fill((0,128,255))
+    game_screen = pygame.Surface((1000, 850))
     clock = pygame.time.Clock()
     finish = False
-    table = GameTable()
+    if (len(args) > 0):
+        table = GameTable(game_screen,args[0])
+    else:
+        table = GameTable(game_screen)
     table.update_matrix()
-    game_screen = pygame.Surface((1000,850))
+
     last_time = pygame.time.get_ticks()
     cur_move = 0
     while not finish:
@@ -115,15 +127,28 @@ def main():
                 if cur_move == 0:
                      continue
         if(pygame.time.get_ticks() - last_time >= 2000):
-            table.Move(cur_move)
+            response = table.Move(cur_move)
+            if(response == -1000):
+                printtext(screen, "Not your turn")
+            elif response == table.playerID:
+                printtext(screen,"You win")
+                pygame.time.wait(2000)
+                finish = True
+            elif response == 3 - table.playerID:
+                printtext(screen, "You lose")
+                pygame.time.wait(2000)
+                finish = True
+            elif response == -1:
+                printtext(screen, "It's a draw")
+                pygame.time.wait(2000)
+                finish = True
             cur_move = 0
             table.update_matrix()
             table.draw_matrix(game_screen)
             last_time = pygame.time.get_ticks()
         screen.blit(game_screen,(0,100))
-        printtext(screen,'muie')
         pygame.display.flip()
         clock.tick(60)
     del table
-
-main()
+    pygame.display.quit()
+    pygame.quit()
