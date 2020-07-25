@@ -130,6 +130,8 @@ def main(*args):
             response = table.Move(cur_move)
             if(response == -1000):
                 printtext(screen, "Not your turn")
+            elif response == 400:
+                printtext(screen,"Incorrect move")
             elif response == table.playerID:
                 printtext(screen,"You win")
                 pygame.time.wait(2000)
